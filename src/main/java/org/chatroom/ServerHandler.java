@@ -3,6 +3,7 @@ package org.chatroom;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.ReferenceCountUtil;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter{
     @Override
@@ -17,9 +18,18 @@ public class ServerHandler extends ChannelInboundHandlerAdapter{
 
     @Override
     public void channelRead(ChannelHandlerContext ctc, Object msg) throws Exception {
-        System.out.println("channelRead from ServerHandler");
-        ((ByteBuf)msg).release();
+        var in = (ByteBuf)msg;
 
+        try {
+            System.out.println(in.toString(io.netty.util.CharsetUtil.US_ASCII));
+        } finally {
+            ReferenceCountUtil.release(msg);
+        }
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) {
+        System.out.println("Channel closed");
     }
 
     @Override
