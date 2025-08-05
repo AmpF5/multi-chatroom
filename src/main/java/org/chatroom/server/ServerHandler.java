@@ -1,14 +1,20 @@
-package org.chatroom;
+package org.chatroom.server;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.util.ReferenceCountUtil;
+import io.netty.util.CharsetUtil;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter{
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("channelRegistered from ServerHandler");
+    }
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        var byteBuf = ctx.alloc().buffer();
+        byteBuf.writeCharSequence("Welcome to MultiChat!\nSet your nickname:", CharsetUtil.UTF_8);
+        ctx.writeAndFlush(byteBuf);
     }
 
     @Override
@@ -17,14 +23,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter{
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctc, Object msg) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         var in = (ByteBuf)msg;
-
-        try {
-            System.out.println(in.toString(io.netty.util.CharsetUtil.US_ASCII));
-        } finally {
-            ReferenceCountUtil.release(msg);
-        }
+        ctx.writeAndFlush(in);
     }
 
     @Override

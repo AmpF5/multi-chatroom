@@ -1,4 +1,4 @@
-package org.chatroom;
+package org.chatroom.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -16,10 +16,11 @@ public class ChatServer {
     }
 
     public void run() throws Exception {
-        var group = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
+        var bossGroup = new MultiThreadIoEventLoopGroup(1, NioIoHandler.newFactory());
+        var workersGroup = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
         try {
             var server = new ServerBootstrap()
-                    .group(group)
+                    .group(bossGroup, workersGroup)
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<>(){
                         @Override
@@ -28,17 +29,15 @@ public class ChatServer {
                         }
                     });
 
-            var channel = server.bind(host, port).sync().channel();
-
-
+            var f=  server.bind(host, port).sync();
             System.out.println("Server started on port:"+port);
 
-            channel.closeFuture().sync();
+            f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             System.out.printf("Cannot start server on %s:%d\n", host, port);
         } finally  {
-            group.shutdownGracefully();
-
+            bossGroup.shutdownGracefully();
+            workersGroup.shutdownGracefully();
         }
     }
 
