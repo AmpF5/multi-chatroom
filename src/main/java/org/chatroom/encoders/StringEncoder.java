@@ -1,4 +1,4 @@
-package org.chatroom.server;
+package org.chatroom.encoders;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

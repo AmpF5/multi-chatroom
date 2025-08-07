@@ -8,6 +8,13 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import org.chatroom.decoders.StringDecoder;
+import org.chatroom.decoders.UsernameDecoder;
+import org.chatroom.encoders.MessageEncoder;
+import org.chatroom.encoders.StringEncoder;
+import org.chatroom.encoders.TimeEncoder;
+import org.chatroom.handlers.ClientInitHandler;
+import org.chatroom.handlers.ServerHandler;
 
 public class ChatServer {
     private final String host = "localhost";
@@ -24,7 +31,7 @@ public class ChatServer {
             var server = new ServerBootstrap()
                     .group(chatGroup)
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(new ChannelInitializer<>(){
+                    .childHandler(new ChannelInitializer<>() {
                         @Override
                         protected void initChannel(Channel ch) {
                             ch.pipeline()
@@ -38,13 +45,13 @@ public class ChatServer {
                         }
                     });
 
-            var f=  server.bind(host, port).sync();
-            System.out.println("Server started on port:"+port);
+            var f = server.bind(host, port).sync();
+            System.out.println("Server started on port:" + port);
 
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             System.out.printf("Cannot start server on %s:%d\n", host, port);
-        } finally  {
+        } finally {
             chatGroup.shutdownGracefully();
         }
     }

@@ -1,17 +1,15 @@
 package org.chatroom.client;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.MultiThreadIoEventLoopGroup;
 import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.CharsetUtil;
-import org.chatroom.server.StringDecoder;
-import org.chatroom.server.StringEncoder;
+import org.chatroom.decoders.StringDecoder;
+import org.chatroom.encoders.StringEncoder;
+import org.chatroom.handlers.ClientHandler;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -58,13 +56,13 @@ public class ChatClient {
         } catch (InterruptedException e) {
             System.out.println("Cannot active the client");
         } finally {
-            
+
             workersGroup.shutdownGracefully();
         }
     }
 
     private void send(String msg) {
-        if(!(this.channel.isWritable()))
+        if (!(this.channel.isWritable()))
             return;
 
         this.channel.writeAndFlush(msg);
@@ -74,11 +72,13 @@ public class ChatClient {
     private void readUserInputAndSend() throws Exception {
         var reader = new BufferedReader(new InputStreamReader(System.in));
 
-        while(true) {
+        while (true) {
             var msg = reader.readLine();
             send(msg);
 
-            if (msg.equals("/quit")) { return; }
+            if (msg.equals("/quit")) {
+                return;
+            }
         }
     }
 }
