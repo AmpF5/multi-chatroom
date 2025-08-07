@@ -30,6 +30,8 @@ public class ChatServer {
                             ch.pipeline()
                                     .addLast(new StringDecoder())
                                     .addLast(new StringEncoder())
+                                    .addLast(new TimeEncoder())
+                                    .addLast(new MessageEncoder())
                                     .addLast(new ClientInitHandler(channelGroup))
                                     .addLast(new ServerHandler(channelGroup));
                         }
