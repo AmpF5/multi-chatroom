@@ -32,6 +32,7 @@ public class ChatServer {
                                     .addLast(new StringEncoder())
                                     .addLast(new TimeEncoder())
                                     .addLast(new MessageEncoder())
+                                    .addLast(new UsernameDecoder())
                                     .addLast(new ClientInitHandler(channelGroup))
                                     .addLast(new ServerHandler(channelGroup));
                         }

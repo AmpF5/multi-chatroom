@@ -6,6 +6,7 @@ import io.netty.channel.group.ChannelGroup;
 
 public class ClientInitHandler extends ChannelInboundHandlerAdapter {
     private final ChannelGroup channelGroup;
+
     public ClientInitHandler(ChannelGroup channelGroup) {
        this.channelGroup = channelGroup;
     }
@@ -20,8 +21,7 @@ public class ClientInitHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         ctx.channel().attr(MessageAttributes.USER).setIfAbsent((String)msg);
 
-        var username = ctx.channel().attr(MessageAttributes.USER).get();
-        var message = username + " has joined the chat";
+        var message = msg + " " + "has joined the chat";
         channelGroup.writeAndFlush(message);
 
         ctx.pipeline().remove(this);

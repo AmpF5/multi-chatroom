@@ -4,6 +4,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.group.ChannelGroup;
 
+import java.util.Objects;
+
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     private final ChannelGroup channelGroup;
 
@@ -13,15 +15,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        var username = ctx.channel().attr(MessageAttributes.USER).get();
-        System.out.println("username" + username);
         channelGroup.writeAndFlush(msg);
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        var username = ctx.channel().attr(MessageAttributes.USER).get();
-        var message = username + " has lef the chat";
+        var username = Objects.requireNonNullElse(ctx.channel().attr(MessageAttributes.USER).get(), "");
+        var message = username + " has left the chat";
         channelGroup.writeAndFlush(message);
 
         channelGroup.remove(ctx.channel());

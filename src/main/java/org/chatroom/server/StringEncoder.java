@@ -8,7 +8,6 @@ import io.netty.util.CharsetUtil;
 
 public class StringEncoder extends MessageToByteEncoder<String> {
     protected void encode(ChannelHandlerContext channelHandlerContext, String s, ByteBuf byteBuf) {
-        System.out.println("StringEncoder");
         byteBuf.writeBytes(s.getBytes(CharsetUtil.UTF_8));
     }
 }
